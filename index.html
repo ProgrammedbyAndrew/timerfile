@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown to 10 Millionth Customer</title>
+    <style>
+        body {
+            background-color: red;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        #counter {
+            font-size: 58px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        .container {
+            text-align: center;
+            border: 2px solid white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Countdown to Our 10 Millionth Customer</h1>
+        <div id="counter">9970000</div> <!-- Start from 9970000, adjust as needed -->
+    </div>
+    <script>
+        function isInBusinessHours() {
+            const currentDate = new Date();
+            const dayOfWeek = currentDate.getDay();
+            const currentHour = currentDate.getHours();
+
+            // Weekdays: 12pm to 12am
+            if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+                return currentHour >= 12 && currentHour < 24;
+            }
+            // Weekends: 12pm to 2am next day
+            else {
+                return currentHour >= 12 || currentHour < 2;
+            }
+        }
+
+        function updateCounterSpeed() {
+            const currentDate = new Date();
+            const dayOfWeek = currentDate.getDay();
+            const currentHour = currentDate.getHours();
+
+            // Weekends: Faster counting especially during the nights
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                return currentHour >= 22 ? 200 : 500;
+            }
+            // Weekdays: Slower counting
+            return 1000;
+        }
+
+        function updateCounter() {
+            if (isInBusinessHours()) {
+                let currentCount = parseInt(document.getElementById('counter').innerText);
+                let randomIncrement = Math.floor(Math.random() * 5) + 1;
+                document.getElementById('counter').innerText = currentCount + randomIncrement;
+            }
+        }
+
+        setInterval(updateCounter, updateCounterSpeed());
+    </script>
+</body>
+
+</html>
