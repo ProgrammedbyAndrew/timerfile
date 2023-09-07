@@ -3,87 +3,111 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown to 10 Millionth Customer</title>
+    <title>Countdown to Our 10 Millionth Customer</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
             background-color: red;
             color: white;
-            font-family: 'Arial', sans-serif;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            margin: 0;
-            padding: 0;
         }
 
-        h1 {
-            font-size: 28px;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
+        #content {
+            text-align: center;
         }
 
         #counter {
-            font-size: 58px;
+            font-size: 4em;
             font-weight: bold;
-            letter-spacing: 2px;
-            margin-top: 5px;
         }
 
-        .container {
-            text-align: center;
-            border: 2px solid white;
-            padding: 20px 40px;
-            border-radius: 15px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        h1 {
+            font-size: 1.5em;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
+    <div id="content">
         <h1>Countdown to Our 10 Millionth Customer</h1>
-        <div id="counter">9970000</div> <!-- Start from 9970000, adjust as needed -->
+        <div id="counter">9970000</div>
     </div>
+
+    <div id="publishDate" style="display: none;">2023-09-07T12:00:00.000Z</div>
+
     <script>
+        // Determine if the current time is within business hours
         function isInBusinessHours() {
             const currentDate = new Date();
-            const dayOfWeek = currentDate.getDay();
             const currentHour = currentDate.getHours();
+            const currentDay = currentDate.getDay();
 
-            // Weekdays: 12pm to 12am
-            if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+            // Weekdays 12 pm to 12 am
+            if (currentDay >= 1 && currentDay <= 5) {
                 return currentHour >= 12 && currentHour < 24;
             }
-            // Weekends: 12pm to 2am next day
+            // Weekends 12 pm to 2 am
             else {
                 return currentHour >= 12 || currentHour < 2;
             }
         }
 
+        // Decide the speed of the counter based on current time
         function updateCounterSpeed() {
             const currentDate = new Date();
-            const dayOfWeek = currentDate.getDay();
             const currentHour = currentDate.getHours();
+            const currentDay = currentDate.getDay();
 
-            // Weekends: Faster counting especially during the nights
-            if (dayOfWeek === 0 || dayOfWeek === 6) {
-                return currentHour >= 22 ? 200 : 500;
+            // Different counting speeds
+            if (currentDay >= 1 && currentDay <= 5) {
+                return 1000;  // Slower counting on weekdays
+            } else if (currentHour >= 22 || currentHour < 2) {
+                return 500;  // Fastest counting during weekend nights
+            } else {
+                return 750;  // Faster counting on weekends
             }
-            // Weekdays: Slower counting
-            return 1000;
         }
 
         function updateCounter() {
             if (isInBusinessHours()) {
                 let currentCount = parseInt(document.getElementById('counter').innerText);
-                let randomIncrement = Math.floor(Math.random() * 5) + 1;
+                let randomIncrement = Math.floor(Math.random() * 5) + 1;  // Random increment between 1 and 5
                 document.getElementById('counter').innerText = currentCount + randomIncrement;
             }
         }
+
+        // Fetch the publication date
+        const publishDate = new Date(document.getElementById('publishDate').innerText);
+        const currentDate = new Date();
+
+        // Calculate the elapsed hours since publication
+        const elapsedHours = Math.abs(currentDate - publishDate) / 36e5;
+
+        // Calculate the average increment per hour
+        const weekdayIncrementPerHour = 400;  // Slower counting on weekdays
+        const weekendIncrementPerHour = 800;  // Faster counting on weekends
+        const weekendNightIncrementPerHour = 1200;  // Fastest counting during weekend nights
+
+        // Calculate the total increment since publication
+        let totalIncrement = 0;
+        for (let i = 0; i < elapsedHours; i++) {
+            const checkDate = new Date(publishDate.getTime() + i * 60 * 60 * 1000);
+            if (checkDate.getDay() >= 1 && checkDate.getDay() <= 5) {
+                totalIncrement += weekdayIncrementPerHour;
+            } else if (checkDate.getHours() >= 22) {
+                totalIncrement += weekendNightIncrementPerHour;
+            } else {
+                totalIncrement += weekendIncrementPerHour;
+            }
+        }
+
+        // Initialize the counter
+        const startingValue = 9970000;
+        document.getElementById('counter').innerText = startingValue + totalIncrement;
 
         setInterval(updateCounter, updateCounterSpeed());
     </script>
